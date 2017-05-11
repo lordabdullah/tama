@@ -1,13 +1,14 @@
-import com.lynden.gmapsfx.GoogleMapView;
-import com.lynden.gmapsfx.MapComponentInitializedListener;
-import com.lynden.gmapsfx.javascript.object.GoogleMap;
-import com.lynden.gmapsfx.javascript.object.LatLong;
-import com.lynden.gmapsfx.javascript.object.MapOptions;
-import com.lynden.gmapsfx.javascript.object.MapType;
-import com.lynden.gmapsfx.javascript.object.Marker;
-import com.lynden.gmapsfx.javascript.object.MarkerOptions;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Vector;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -16,35 +17,158 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javax.bluetooth.DeviceClass;
+import javax.bluetooth.DiscoveryAgent;
+import javax.bluetooth.DiscoveryListener;
+import javax.bluetooth.LocalDevice;
+import javax.bluetooth.RemoteDevice;
+import javax.bluetooth.ServiceRecord;
+import javax.bluetooth.UUID;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
+
+/**
+* A simple SPP client that connects with an SPP server
+*/
+public class index implements DiscoveryListener{
+
+public static String version = new String("Alpha 0.1");
+
+//object used for waiting
+private static Object lock=new Object();
+
+//vector containing the devices discovered
+private static Vector vecDevices=new Vector();
+
+private static String connectionURL=null;
+
+public static void main(String[] args) throws IOException {
+
+    System.out.println("\n                                   Tama OS" + version); // statement to display on start of program
+    System.out.println("Authors: Abdullah Chaudhry, Kavinath Kanesalingam, Ryan Lawson, Vedha Rajan"); //statement to display Authors
+    System.out.println("The following program is confidential and eyes only for the duration of the development period. \n");  //warning
+    System.out.println("CODE - GUNDAM");
+    System.out.println(" G - eneral \n U - nilateral \n N - eurolink \n D - ispersive \n A - utonomic \n M - anuever");
+
+    index client=new index();
+
+    //display local device address and name
+    LocalDevice localDevice = LocalDevice.getLocalDevice();
+    System.out.println("Address: "+localDevice.getBluetoothAddress());
+    System.out.println("Name: "+localDevice.getFriendlyName());
+
+    //find devices
+    DiscoveryAgent agent = localDevice.getDiscoveryAgent();
+
+    System.out.println("Starting device inquiry...");
+    agent.startInquiry(DiscoveryAgent.GIAC, client);
+
+    try {
+        synchronized(lock){
+            lock.wait();
+        }
+    }
+    catch (InterruptedException e) {
+        e.printStackTrace();
+    }
 
 
+    System.out.println("Device Inquiry Completed. ");
 
-public class index extends Application{
-public String version = new String("Alpha 0.1");
+    //print all devices in vecDevices
+    int deviceCount=vecDevices.size();
 
-  public static void main(String []args) {
+    if(deviceCount <= 0){
+        System.out.println("No Devices Found .");
+        System.exit(0);
+    }
+    else{
+        //print bluetooth device addresses and names in the format [ No. address (name) ]
+        System.out.println("Bluetooth Devices: ");
+        for (int i = 0; i <deviceCount; i++) {
+            RemoteDevice remoteDevice=(RemoteDevice)vecDevices.elementAt(i);
+            System.out.println((i+1)+". "+remoteDevice.getBluetoothAddress()+" ("+remoteDevice.getFriendlyName(true)+")");
+        }
+    }
 
-        System.out.println("\n                                   Tama OS Alpha 0.1"); // statement to display on start of program
-        System.out.println("Authors: Abdullah Chaudhry, Kavinath Kanesalingam, Ryan Lawson, Vedha Rajan"); //statement to display Authors
-        System.out.println("The following program is confidential and eyes only for the duration of the development period. \n");  //warning
-        System.out.println("CODE - GUNDAM");
-        System.out.println("G - eneral \n U - nilateral \n N - eurolink \n D - ispersive \n A - utonomic M - anuever");
+    System.out.print("Choose Device index: ");
+    BufferedReader bReader=new BufferedReader(new InputStreamReader(System.in));
+
+    String chosenIndex=bReader.readLine();
+    int index=Integer.parseInt(chosenIndex.trim());
+
+    //check for spp service
+    RemoteDevice remoteDevice=(RemoteDevice)vecDevices.elementAt(index-1);
+    UUID[] uuidSet = new UUID[1];
+    uuidSet[0]=new UUID("446118f08b1e11e29e960800200c9a66", false);
+
+    System.out.println("\nSearching for service...");
+    agent.searchServices(null,uuidSet,remoteDevice,client);
+
+    try {
+        synchronized(lock){
+            lock.wait();
+        }
+    }
+    catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+
+    if(connectionURL==null){
+        System.out.println("Device does not support Simple SPP Service.");
+        System.exit(0);
+    }
+
+    //connect to the server and send a line of text
+    StreamConnection streamConnection=(StreamConnection)Connector.open(connectionURL);
+
+    //send string
+    OutputStream outStream=streamConnection.openOutputStream();
+    PrintWriter pWriter=new PrintWriter(new OutputStreamWriter(outStream));
+    pWriter.write("Test String from SPP Client\r\n");
+    pWriter.flush();
 
 
-        launch(args);
+    //read response
+    InputStream inStream=streamConnection.openInputStream();
+    BufferedReader bReader2=new BufferedReader(new InputStreamReader(inStream));
+    String lineRead=bReader2.readLine();
+    System.out.println(lineRead);
 
 
-     }
+}//main
 
-     public void start(stage primaryStage) throws Exception{
-      primaryStage.setTitle("Tama OS -" + version);
+//methods of DiscoveryListener
+public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
+    //add the device to the vector
+    if(!vecDevices.contains(btDevice)){
+        vecDevices.addElement(btDevice);
+    }
+}
 
-      button = new Button();
-      button.setText();
+//implement this method since services are not being discovered
+public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
+    if(servRecord!=null && servRecord.length>0){
+        connectionURL=servRecord[0].getConnectionURL(0,false);
+    }
+    synchronized(lock){
+        lock.notify();
+    }
+}
 
-     }
+//implement this method since services are not being discovered
+public void serviceSearchCompleted(int transID, int respCode) {
+    synchronized(lock){
+        lock.notify();
+    }
+}
 
 
+public void inquiryCompleted(int discType) {
+    synchronized(lock){
+        lock.notify();
+    }
 
+}//end method
 
 }
