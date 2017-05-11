@@ -1,81 +1,61 @@
-obd-java-api
+PROJECT TAMA
 ============
 
-OBD-II Java API
 
-[![Build status](https://circleci.com/gh/pires/obd-java-api.svg?style=svg)](https://circleci.com/gh/pires/obd-java-api)
+INTRODUCTION
+____________
 
-## Important resources
 
-Before opening an issue or using this library, please take a look at the following resources:
+Project Tama is a stand-alone operating system designed to bring a new life to old vehicles. Current goals of project are:
 
-* [Understanding OBD](https://www.elmelectronics.com/help/obd/tips/#UnderstandingOBD)
-* [The ELM327](https://www.elmelectronics.com/help/obd/tips/#327_Commands)
+1) OBD diagnostics and codes
+2) OBD statistics and logging
+3) GPS logging for duration of drive time
+4) GPS tracking
+5) Switch Panel Control for LEDs/Winches/etc
+6) Music Player
 
-## Build ##
+And many other features - some of which are classified for the time being.
 
-### Requisites ###
 
-* JDK 7
-* Maven 3.1 or newer
+PROGRAMMING
+___________
 
-### Compile, package and install locally ###
+Project Tama is programmed entirely in Java.
 
-```
-mvn clean install
-```
+DEPENDENCIES
+____________
 
-## Usage ##
+1)OBD-JAVA-API
 
-### Maven ###
-```
-<dependency>
-  <groupId>com.github.pires</groupId>
-  <artifactId>obd-java-api</artifactId>
-  <version>1.0</version>
-</dependency>
-```
+Used to receive/send data from Tama OS to the ELM 327 OBD device(s).
 
-### Gradle ###
-```
-dependencies {
-    compile 'com.github.pires:obd-java-api:1.0'
-}
-```
+License:
 
-### Example ###
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+    http://www.apache.org/licenses/LICENSE-2.0
 
-After pairing and establishing Bluetooth connection to your ELM327 device..
-```
-...
-// retrieve Bluetooth socket
-socket = ...; // specific to the VM you're using (Java, Android, etc.)
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
 
-// execute commands
-try {
-  new EchoOffCommand().run(socket.getInputStream(), socket.getOutputStream());
-  new LineFeedOffCommand().run(socket.getInputStream(), socket.getOutputStream());
-  new TimeoutCommand(125).run(socket.getInputStream(), socket.getOutputStream());
-  new SelectProtocolCommand(ObdProtocols.AUTO).run(socket.getInputStream(), socket.getOutputStream());
-  new AmbientAirTemperatureCommand().run(socket.getInputStream(), socket.getOutputStream());
-} catch (Exception e) {
-  // handle errors
-}
-```
+2) Bluecove
 
-## Troubleshooting ##
+Used to initialize a Bluetooth connection with the ELM 327 OBD device(s)
 
-As *@dembol* noted:
+License:
 
-Have you checked your ELM327 adapter with Torque or Scanmaster to see if it works with your car? Maybe the problem is with your device?
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+    http://www.apache.org/licenses/LICENSE-2.0
 
-Popular OBD diagnostic tools reset state and disable echo, spaces etc before protocol selection. Download some ELM327 terminal for android and try following commands in order:
-```
-ATD
-ATZ
-AT E0
-AT L0
-AT S0
-AT H0
-AT SP 0
-```
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
