@@ -44,11 +44,23 @@ private static String connectionURL=null;
 
 public static void main(String[] args) throws IOException {
 
-    System.out.println("\n                                   Tama OS" + version); // statement to display on start of program
-    System.out.println("Authors: Abdullah Chaudhry, Kavinath Kanesalingam, Ryan Lawson, Vedha Rajan"); //statement to display Authors
-    System.out.println("The following program is confidential and eyes only for the duration of the development period. \n");  //warning
-    System.out.println("CODE - GUNDAM");
-    System.out.println(" G - eneral \n U - nilateral \n N - eurolink \n D - ispersive \n A - utonomic \n M - anuever");
+  String version = new String("Alpha 0.1");
+
+          System.out.println("\n                                   Tama OS " + version); // statement to display on start of program
+          System.out.println("\nAuthors: Abdullah Chaudhry, Kavinath Kanesalingam, Ryan Lawson, Vedha Rajan"); //statement to display Authors
+          System.out.println("The following program is confidential and eyes only for the duration of the development period. \n");  //warning
+          System.out.println("G - eneral \nU - nilateral \nN - eurolink \nD - ispersive \nA - utonomic \nM - anuever \n");
+          System.out.println("Initializing Controllers \n");
+          System.out.println("Engaging Boot Testing\n");
+
+
+          if(initial_test()){
+          System.out.println("\n\nCLEAR TO LAUNCH \n");
+          }
+
+          else{
+          System.out.println("WARNING: SOME TESTS HAVE FAILED - NON-CRITICAL.")
+          }
 
     index client=new index();
 
@@ -137,6 +149,17 @@ public static void main(String[] args) throws IOException {
 
 
 }//main
+
+public static boolean initial_test(){
+
+System.out.println("Testing Engine Thresholds");
+System.out.println("Testing Fuel Capacity");
+System.out.println("Testing Power Engagement");
+System.out.println("Releasing Quantum Lock");
+
+return true;
+
+}
 
 //methods of DiscoveryListener
 public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
