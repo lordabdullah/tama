@@ -1,197 +1,55 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.Vector;
 
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-import javax.bluetooth.DeviceClass;
-import javax.bluetooth.DiscoveryAgent;
-import javax.bluetooth.DiscoveryListener;
-import javax.bluetooth.LocalDevice;
-import javax.bluetooth.RemoteDevice;
-import javax.bluetooth.ServiceRecord;
-import javax.bluetooth.UUID;
-import javax.microedition.io.Connector;
-import javax.microedition.io.StreamConnection;
+public class index {
 
-/**
-* A simple SPP client that connects with an SPP server
-*/
-public class index implements DiscoveryListener{
-
-public static String version = new String("Alpha 0.1");
-
-//object used for waiting
-private static Object lock=new Object();
-
-//vector containing the devices discovered
-private static Vector vecDevices=new Vector();
-
-private static String connectionURL=null;
-
-public static void main(String[] args) throws IOException {
-
-  String version = new String("Alpha 0.1");
-
-          System.out.println("\n                                   Tama OS " + version); // statement to display on start of program
-          System.out.println("\nAuthors: Abdullah Chaudhry, Kavinath Kanesalingam, Ryan Lawson, Vedha Rajan"); //statement to display Authors
-          System.out.println("The following program is confidential and eyes only for the duration of the development period. \n");  //warning
-          System.out.println("G - eneral \nU - nilateral \nN - eurolink \nD - ispersive \nA - utonomic \nM - anuever \n");
-          System.out.println("Initializing Controllers \n");
-          System.out.println("Engaging Boot Testing\n");
+    public static String version = new String("Alpha 0.1");
 
 
-          if(initial_test()){
-          System.out.println("\n\nCLEAR TO LAUNCH \n");
-          }
 
-          else{
-          System.out.println("WARNING: SOME TESTS HAVE FAILED - NON-CRITICAL.")
-          }
+    public static void main(String[] args) {
 
-    index client=new index();
+        bluetooth connection = new bluetooth();
 
-    //display local device address and name
-    LocalDevice localDevice = LocalDevice.getLocalDevice();
-    System.out.println("Address: "+localDevice.getBluetoothAddress());
-    System.out.println("Name: "+localDevice.getFriendlyName());
+        Initial_Output();
 
-    //find devices
-    DiscoveryAgent agent = localDevice.getDiscoveryAgent();
-
-    System.out.println("Starting device inquiry...");
-    agent.startInquiry(DiscoveryAgent.GIAC, client);
-
-    try {
-        synchronized(lock){
-            lock.wait();
-        }
-    }
-    catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-
-
-    System.out.println("Device Inquiry Completed. ");
-
-    //print all devices in vecDevices
-    int deviceCount=vecDevices.size();
-
-    if(deviceCount <= 0){
-        System.out.println("No Devices Found .");
-        System.exit(0);
-    }
-    else{
-        //print bluetooth device addresses and names in the format [ No. address (name) ]
-        System.out.println("Bluetooth Devices: ");
-        for (int i = 0; i <deviceCount; i++) {
-            RemoteDevice remoteDevice=(RemoteDevice)vecDevices.elementAt(i);
-            System.out.println((i+1)+". "+remoteDevice.getBluetoothAddress()+" ("+remoteDevice.getFriendlyName(true)+")");
+        try {
+            connection.main(0);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
-    System.out.print("Choose Device index: ");
-    BufferedReader bReader=new BufferedReader(new InputStreamReader(System.in));
+    public static void Initial_Output() {
 
-    String chosenIndex=bReader.readLine();
-    int index=Integer.parseInt(chosenIndex.trim());
+        System.out.println("\n                                   Tama OS " + version); // statement to display on start of program
+        System.out.println("\nAuthors: Abdullah Chaudhry, Kavinath Kanesalingam, Ryan Lawson, Vedha Rajan"); //statement to display Authors
+        System.out.println("The following program is confidential and eyes only for the duration of the development period. \n"); //warning
+        System.out.println("G - eneral \nU - nilateral \nN - eurolink \nD - ispersive \nA - utonomic \nM - anuever \n");
+        System.out.println("Initializing Controllers");
 
-    //check for spp service
-    RemoteDevice remoteDevice=(RemoteDevice)vecDevices.elementAt(index-1);
-    UUID[] uuidSet = new UUID[1];
-    uuidSet[0]=new UUID("446118f08b1e11e29e960800200c9a66", false);
 
-    System.out.println("\nSearching for service...");
-    agent.searchServices(null,uuidSet,remoteDevice,client);
-
-    try {
-        synchronized(lock){
-            lock.wait();
+        if (Initial_Test()) {
+            System.out.println("\n\nCLEAR TO LAUNCH \n");
+        } else {
+            System.out.println("WARNING: SOME TESTS HAVE FAILED - NON-CRITICAL.");
         }
-    }
-    catch (InterruptedException e) {
-        e.printStackTrace();
+
     }
 
-    if(connectionURL==null){
-        System.out.println("Device does not support Simple SPP Service.");
-        System.exit(0);
+    public static boolean Initial_Test() {
+
+        System.out.println("Testing Engine Thresholds");
+        System.out.println("Testing Fuel Capacity");
+        System.out.println("Testing Power Engagement");
+        System.out.println("Releasing Quantum Lock");
+        System.out.println("Neurological Link Detected - Standby For Cryo-Bonding");
+        System.out.println("Neurological Link Successfully Bonded");
+
+        return true;
+
     }
 
-    //connect to the server and send a line of text
-    StreamConnection streamConnection=(StreamConnection)Connector.open(connectionURL);
 
-    //send string
-    OutputStream outStream=streamConnection.openOutputStream();
-    PrintWriter pWriter=new PrintWriter(new OutputStreamWriter(outStream));
-    pWriter.write("Test String from SPP Client\r\n");
-    pWriter.flush();
-
-
-    //read response
-    InputStream inStream=streamConnection.openInputStream();
-    BufferedReader bReader2=new BufferedReader(new InputStreamReader(inStream));
-    String lineRead=bReader2.readLine();
-    System.out.println(lineRead);
-
-
-}//main
-
-public static boolean initial_test(){
-
-System.out.println("Testing Engine Thresholds");
-System.out.println("Testing Fuel Capacity");
-System.out.println("Testing Power Engagement");
-System.out.println("Releasing Quantum Lock");
-
-return true;
-
-}
-
-//methods of DiscoveryListener
-public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
-    //add the device to the vector
-    if(!vecDevices.contains(btDevice)){
-        vecDevices.addElement(btDevice);
-    }
-}
-
-//implement this method since services are not being discovered
-public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
-    if(servRecord!=null && servRecord.length>0){
-        connectionURL=servRecord[0].getConnectionURL(0,false);
-    }
-    synchronized(lock){
-        lock.notify();
-    }
-}
-
-//implement this method since services are not being discovered
-public void serviceSearchCompleted(int transID, int respCode) {
-    synchronized(lock){
-        lock.notify();
-    }
-}
-
-
-public void inquiryCompleted(int discType) {
-    synchronized(lock){
-        lock.notify();
-    }
-
-}//end method
 
 }
