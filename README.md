@@ -4,7 +4,7 @@ PROJECT TAMA
 
 
 INTRODUCTION
-____________
+------------
 
 
 Project Tama is a stand-alone operating system designed to bring a new life to old vehicles. Current goals of project are:
@@ -21,25 +21,25 @@ And many other features - some of which are classified for the time being.
 
 
 PROGRAMMING
-___________
+-----------
 
 Project Tama is programmed entirely in Java.
 
 
 
 DEPENDENCIES
-____________
+------------
 
-1) OBD-JAVA-API
+###1) OBD-java
 
 Used to receive/send data from Tama OS to the ELM 327 OBD device(s).
 
-2) Bluecove
+###2) Bluecove
 
 Used to initialize a Bluetooth connection with the ELM 327 OBD device(s).
 
-LICENSE
-_______
+LICENSES
+--------
 
 License applies to dependencies only.
 
