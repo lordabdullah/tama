@@ -15,6 +15,8 @@ Project Tama is a stand-alone operating system designed to bring a new life to o
 - GPS tracking
 - Switch Panel Control for LEDs/Winches/etc
 - Music Player
+- Ad-Hoc Messaging between fleet vehicles
+
 
 And many other features - some of which are classified for the time being.
 
@@ -30,11 +32,11 @@ Project Tama is programmed entirely in Java.
 DEPENDENCIES
 ------------
 
-###1) OBD-java
+**1) OBD-java**
 
 Used to receive/send data from Tama OS to the ELM 327 OBD device(s).
 
-###2) Bluecove
+**2) Bluecove**
 
 Used to initialize a Bluetooth connection with the ELM 327 OBD device(s).
 
@@ -46,6 +48,7 @@ License applies to dependencies only.
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of
 the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
