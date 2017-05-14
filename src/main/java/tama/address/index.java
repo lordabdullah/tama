@@ -1,3 +1,4 @@
+package tama.address;
 import java.io.IOException;
 
 public class index {
